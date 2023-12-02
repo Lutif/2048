@@ -18,6 +18,23 @@ export default function Board({
 }) {
   const [smallestTile, setSmallestTile] = useState(2);
   const [largestTile, setLargestTile] = useState(2);
+  const [touchStart, setTouchStart] = useState({x: 0, y: 0});
+  const [touchEnd, setTouchEnd] = useState({x: 0, y: 0});
+
+  const handleTouchStart = (event) => {
+    setTouchStart({
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY
+    });
+  };
+
+  const handleTouchMove = (event) => {
+    setTouchEnd({
+      x: event.touches[0].clientX,
+      y: event.touches[0].clientY
+    });
+  };
+
 
   const replaceSmallestTile = useCallback(
     (value) => {
@@ -227,6 +244,32 @@ export default function Board({
     return true;
   }, [board, checkIfBoardIsFull]);
 
+  const handleTouchEnd = () => {
+    const xDiff = touchEnd.x - touchStart.x;
+    const yDiff = touchEnd.y - touchStart.y;
+    if (checkIfGameIsOver()) {
+      alert("Game Over");
+      setGameStatus(GAME_STATUS.OVER);
+    }
+    if (Math.abs(xDiff) > Math.abs(yDiff)) {
+      if (xDiff > 0) {
+        handleRightKey();
+        insertRandomTile();
+      } else {
+        handleLeftKey();
+        insertRandomTile();
+      }
+    } else {
+      if (yDiff > 0) {
+        handleDownKey();
+        insertRandomTile();
+      } else {
+        handleUpKey();
+        insertRandomTile();
+      }
+    }
+  };
+
   useEffect(() => {
     const handleKeyDown = (event) => {
       if (
@@ -289,7 +332,11 @@ export default function Board({
   }, [board.length, largestTile, setCanExtendBoard]);
 
   return (
-    <div>
+    <div
+          onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
       {board.map((row, rowIndex) => (
         <div key={rowIndex}>
           {row.map((tile, columnIndex) => (
