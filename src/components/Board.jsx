@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import Tile from "./Tile";
 import { GAME_STATUS } from "../utils";
+import { useGameContext } from "./GameContext";
 /*
 keyboard controlls . arrow keys to move all tiles in that direction as much as possible
 if two tiles of the same value collide, they merge into a new tile that has a value of the sum of the two colliding tiles
@@ -8,14 +9,16 @@ every turn, a new tile will randomly appear in an empty spot on the board with a
 if the board is full and no valid moves are possible, the game is over
 */
 
-export default function Board({
+
+export default function Board() {
+ const {
   gameStatus,
   setScore,
   setGameStatus,
   board,
   setBoard,
   setCanExtendBoard,
-}) {
+}= useGameContext();
   const [smallestTile, setSmallestTile] = useState(2);
   const [largestTile, setLargestTile] = useState(2);
   const [touchStart, setTouchStart] = useState({x: 0, y: 0});
